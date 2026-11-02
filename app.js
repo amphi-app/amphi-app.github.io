@@ -310,11 +310,12 @@ function placeNowLine() {
   line.innerHTML = `<span class="now-time">${timeFormatter.format(now)}</span>`;
   container.appendChild(line);
 
-  // Hide a class's start time where the red time would sit on top of it.
+  // Hide a class's start time where the red time actually overlaps it.
+  const half = line.querySelector(".now-time").offsetHeight / 2;
   for (const label of container.querySelectorAll(".timeline-time")) {
-    // The label's text starts below its 18px top padding.
-    const middle = label.offsetTop + 18 + (label.offsetHeight - 18) / 2;
-    if (Math.abs(middle - y) < 20) label.classList.add("is-covered");
+    const textTop = label.offsetTop + parseFloat(getComputedStyle(label).paddingTop);
+    const textBottom = label.offsetTop + label.offsetHeight;
+    if (y + half > textTop && y - half < textBottom) label.classList.add("is-covered");
   }
 }
 
@@ -1645,7 +1646,7 @@ document.addEventListener("visibilitychange", () => {
 });
 
 // Must match CACHE_NAME in sw.js (a test checks); both change with every release.
-const APP_VERSION = "amphi-v30";
+const APP_VERSION = "amphi-v31";
 const RELOAD_KEY = "zeus-reloaded-for";
 
 async function reloadIfNewVersion() {

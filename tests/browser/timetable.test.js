@@ -71,7 +71,7 @@ test("now line: inside the class that's on, as far down as the class has got", a
 
 test("now line: in the gap between classes, at the top before them, below after them", async () => {
   const monday = addDays(MONDAY, 7); // 08:30–10:30 and 11:00–13:00
-  for (const [hour, minute, where] of [[7, 0, "top"], [10, 45, "gap"], [11, 5, "second"], [19, 20, "bottom"]]) {
+  for (const [hour, minute, where] of [[7, 0, "top"], [10, 45, "gap"], [11, 20, "second"], [12, 0, "middle"], [19, 20, "bottom"]]) {
     const { page, context, errors } = await openApp(app, { now: paris(monday, hour, minute) });
     await loadGroup(page);
     await showPage(page, 1);
@@ -84,6 +84,7 @@ test("now line: in the gap between classes, at the top before them, below after 
       assert.ok(y > cards[1].top && y < cards[1].bottom, label);
       assert.deepEqual(covered, ["11:00"], "the start time under the red time is hidden");
     }
+    if (where === "middle") assert.deepEqual(covered, [], "and shows again once the line has moved on");
     if (where === "bottom") assert.ok(y > cards[1].bottom, label);
     assert.deepEqual(errors, []);
     await context.close();
